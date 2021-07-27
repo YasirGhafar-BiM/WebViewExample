@@ -7,40 +7,90 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.techlads.webviewexample.model.Asset
+import com.techlads.webviewexample.network.AssetResponse
+import com.techlads.webviewexample.utils.Resource
+import com.techlads.webviewexample.utils.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    var modelId = "7w7pAfrCfjovwykkEeRFLGw5SXS"
+    //var modelId = "7w7pAfrCfjovwykkEeRFLGw5SXS"
+    //var modelId = "442c548d94744641ba279ae94b5f45ec"
 
+    var adapter: AssetAdapter? = null
+    var viewModel: AssetViewModel? = null
     @SuppressLint("SetJavaScriptEnabled", "JavascriptInterface", "AddJavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // WebViewClient allows you to handle
         // onPageFinished and override Url loading.
-        webView?.webViewClient = WebViewClient();
-
+        //webView?.webViewClient = WebViewClient();
+        setUpAdapter()
         // this will load the url of the website
-        webView?.loadUrl("file:///android_asset/sketch_fab.html")
-        webView.addJavascriptInterface(modelId, "modelId")
+//        webView?.loadUrl("file:///android_asset/sketchfab.html")
+//        webView.addJavascriptInterface(modelId, "modelId")
         // this will enable the javascript settings
-        webView?.settings?.javaScriptEnabled = true
-        bind(webView)
-
-        webView.setWebViewClient(object : WebViewClient() {
-            override fun onPageFinished(view: WebView, url: String) {
-                super.onPageFinished(view, url)
-                webView.loadUrl("javascript:loadmodel()")
-            }
-        })
+        //webView?.settings?.javaScriptEnabled = true
+        //bind(webView)
+//
+//        webView.setWebViewClient(object : WebViewClient() {
+//            override fun onPageFinished(view: WebView, url: String) {
+//                super.onPageFinished(view, url)
+//                webView.loadUrl("javascript:loadmodel('${modelId}')")
+//            }
+//        })
         // if you want to enable zoom feature
         //webView?.settings?.setSupportZoom(true)
 
+        val factory = ViewModelFactory(AssetsRepository())
+        viewModel =ViewModelProvider(this, factory)[AssetViewModel::class.java]
+
+        viewModel?.getModels()
+        viewModel!!.assetResponse.observe(this, response)
+
     }
 
+    val response = Observer<Resource<AssetResponse>> { result ->
+        when(result.status) {
+            Resource.Status.SUCCESS -> {
+                Log.d("RESPONSE::", result.data.toString())
+                result.data?.let { onSuccess(it) }
+            }
+            Resource.Status.ERROR -> {
+                Log.d("RESPONSE::", result.data.toString())
+            }
+            Resource.Status.LOADING -> {
+
+            }
+        }
+    }
+
+    private fun onSuccess(response: AssetResponse) {
+        response.results?.let {
+            adapter?.updateAdapter(it)
+        }
+    }
+
+    fun setUpAdapter() {
+        modelsRv.postDelayed({
+            adapter = AssetAdapter(this)
+            modelsRv.adapter = adapter
+            modelsRv.layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
+        }, 200)
+    }
+
+    fun toWebViewActivity(asset: Asset) {
+        WebViewActivity.startActivity(this, asset.embedUrl);
+    }
     // if you press Back button this code will work
-    override fun onBackPressed() {
+    /*override fun onBackPressed() {
         // if your webview can go back it will go back
         if (webView.canGoBack())
             webView.goBack()
@@ -48,7 +98,8 @@ class MainActivity : AppCompatActivity() {
         // it will exit the application
         else
             super.onBackPressed()
-    }
+
+    }*/
 
     @SuppressLint("AddJavascriptInterface")
     fun bind(webView: WebView) {
@@ -56,7 +107,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
-
 
 object AndroidJSInterface {
     val TAG = "AndroidJSInterface"

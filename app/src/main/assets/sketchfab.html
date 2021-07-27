@@ -20,11 +20,10 @@
 
         var iframe = document.getElementById( 'api-frame' );
 
-            var uid = Android.getModelKey();
 
             var client = null;
 
-            function loadmodel(){
+            function loadmodel(uid){
 
                 document.addEventListener('load', () => console.log( 'viewerready' ))
 
@@ -34,7 +33,7 @@
                 // Alternatively, you can request a specific version.
                 // var client = new Sketchfab( '1.0.0', iframe );
 
-                client.init( uid, {
+                client.init({
                     success: function onSuccess( api ){
                         console.log( 'Success' );
                         api.load();
@@ -49,7 +48,10 @@
                     },
                     error: function onError( callback ){
                         console.log( this.error );
-                    }
+                    },
+                    camera: 0,
+                    blending: 1,
+                    autospin: 4,
                 } );
             };
 
