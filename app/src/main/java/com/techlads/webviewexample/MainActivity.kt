@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,14 +15,13 @@ import com.techlads.webviewexample.network.AssetResponse
 import com.techlads.webviewexample.utils.Resource
 import com.techlads.webviewexample.utils.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
     //var modelId = "7w7pAfrCfjovwykkEeRFLGw5SXS"
     //var modelId = "442c548d94744641ba279ae94b5f45ec"
 
-    var adapter: AssetAdapter? = null
+    var adapter: DataBindingAssetAdapter? = null
     var viewModel: AssetViewModel? = null
     @SuppressLint("SetJavaScriptEnabled", "JavascriptInterface", "AddJavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setUpAdapter() {
         modelsRv.postDelayed({
-            adapter = AssetAdapter(this)
+            adapter = DataBindingAssetAdapter(this)
             modelsRv.adapter = adapter
             modelsRv.layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
         }, 200)

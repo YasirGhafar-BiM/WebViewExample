@@ -13,14 +13,9 @@ import kotlinx.android.synthetic.main.item_model.view.*
 import java.net.URL
 
 
-class AssetAdapter: RecyclerView.Adapter<AssetAdapter.AssetViewHolder> {
+class AssetAdapter(var context: Context) : RecyclerView.Adapter<AssetAdapter.AssetViewHolder>() {
 
     var assets: MutableList<Asset> = arrayListOf()
-    var context: Context;
-
-    constructor(context: Context) {
-        this.context = context
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AssetViewHolder {
         return AssetViewHolder(
@@ -36,9 +31,9 @@ class AssetAdapter: RecyclerView.Adapter<AssetAdapter.AssetViewHolder> {
         return assets.size
     }
 
-    inner class AssetViewHolder: RecyclerView.ViewHolder, View.OnClickListener {
+    inner class AssetViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
-        constructor(view: View) : super(view) {
+        init {
             view.setOnClickListener(this)
         }
 

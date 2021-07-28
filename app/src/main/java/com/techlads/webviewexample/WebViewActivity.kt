@@ -71,7 +71,6 @@ class WebViewActivity : AppCompatActivity() {
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.d("PM_Exception", e.message.toString())
             }
-
             return false
         }
 
